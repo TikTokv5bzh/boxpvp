@@ -1,1 +1,241 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اضافات بوكس بي في بي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-y: auto; 
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: -10px;
+            left: -10px;
+            width: calc(100vw + 20px);
+            height: calc(100vh + 20px);
+            background-image: url('https://imgg.io/images/2025/07/05/93e70aa13e7ed909e269cbc417d76aa6.webp');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(5px);
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
 
+    <div class="w-full max-w-md mx-auto p-8 bg-gray-900/70 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-700 my-8">
+        
+        <div class="flex justify-between items-center mb-6">
+            <img src="https://imgg.io/images/2025/05/31/fc02dd5bc2b17705c9bbfda17f7500a0.png" alt="شعار السيرفر" class="w-16 h-16 rounded-full shadow-lg">
+            <button id="languageSwitcher" class="text-sm font-medium py-2 px-4 bg-gray-700/80 hover:bg-gray-600/80 rounded-lg transition-colors">
+                English
+            </button>
+        </div>
+
+        <h1 id="main-title" class="text-3xl font-bold text-center mb-8">اضافات بوكس بي في بي</h1>
+
+        <form id="discordForm">
+            <div class="mb-5">
+                <label for="username" class="block mb-2 text-sm font-medium text-gray-300">
+                    <span id="user-label">يوزر دسكورد</span><span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="username" class="bg-gray-700/80 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400" placeholder="ادخل اليوزر هنا" required>
+            </div>
+            <div class="mb-5">
+                <label for="message" class="block mb-2 text-sm font-medium text-gray-300">
+                    <span id="message-label">شرح الفكرة</span><span class="text-red-500">*</span>
+                </label>
+                <textarea id="message" rows="4" class="bg-gray-700/80 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400" placeholder="اكتب شرحًا كاملًا لفكرتك هنا..." required></textarea>
+            </div>
+             <div class="mb-5">
+                <label for="imageUrls" id="image-urls-label" class="block mb-2 text-sm font-medium text-gray-300">روابط الصور (اختياري - كل رابط في سطر)</label>
+                <textarea id="imageUrls" rows="3" class="bg-gray-700/80 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400" placeholder="https://.../image1.png&#10;https://.../image2.png"></textarea>
+            </div>
+            
+            <button type="submit" id="submitButton" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-800 font-medium rounded-lg text-sm w-full px-5 py-3 text-center transition-colors duration-300">
+                ارسال اقتراح
+            </button>
+        </form>
+
+        <div id="statusMessage" class="mt-6 text-center text-sm font-medium"></div>
+    </div>
+
+    <footer class="w-full text-center py-4">
+        <p id="footer-text" class="text-gray-400 text-sm">&copy; جميع الحقوق محفوظة لـ RivalMC</p>
+    </footer>
+
+    <script>
+        const form = document.getElementById('discordForm');
+        const usernameInput = document.getElementById('username');
+        const messageInput = document.getElementById('message');
+        const imageUrlsInput = document.getElementById('imageUrls');
+        const submitButton = document.getElementById('submitButton');
+        const statusMessage = document.getElementById('statusMessage');
+        const languageSwitcher = document.getElementById('languageSwitcher');
+        const footerText = document.getElementById('footer-text');
+
+        const webhookUrl = 'https://discord.com/api/webhooks/1390951181316259901/dnhMZ7ZvBQVxBpyuYLzhF7ABkowjd_9V2jNrjSl56dGQgoYThnbJKMDHk57o2QdpDAQh';
+
+        let currentLanguage = 'ar';
+        const translations = {
+            ar: {
+                pageTitle: "اضافات بوكس بي في بي",
+                mainTitle: "اضافات بوكس بي في بي",
+                userLabel: "يوزر دسكورد",
+                userPlaceholder: "ادخل اليوزر هنا",
+                messageLabel: "شرح الفكرة",
+                messagePlaceholder: "اكتب شرحًا كاملًا لفكرتك هنا...",
+                imageUrlsLabel: "روابط الصور (اختياري - كل رابط في سطر)",
+                imageUrlsPlaceholder: "https://.../image1.png\nhttps://.../image2.png",
+                submitButton: "ارسال اقتراح",
+                submitButtonSending: "جاري الإرسال...",
+                statusSuccess: "تم إرسال البيانات بنجاح!",
+                statusFail: "فشل الإرسال:",
+                statusNetworkError: "حدث خطأ في الشبكة. الرجاء المحاولة مرة أخرى.",
+                switchTo: "English",
+                footerText: "&copy; جميع الحقوق محفوظة لـ RivalMC",
+                discordContent: "اقتراح إضافة جديد من",
+                discordEmbedTitle: "تفاصيل الفكرة",
+                discordUserField: "صاحب الفكرة",
+                discordMessageField: "الشرح",
+                discordFooter: "تم الإرسال في:"
+            },
+            en: {
+                pageTitle: "Box PvP Additions",
+                mainTitle: "Box PvP Additions",
+                userLabel: "Discord Username",
+                userPlaceholder: "Enter username here",
+                messageLabel: "Idea Explanation",
+                messagePlaceholder: "Write a full explanation of your idea here...",
+                imageUrlsLabel: "Image URLs (Optional - One per line)",
+                imageUrlsPlaceholder: "https://.../image1.png\nhttps://.../image2.png",
+                submitButton: "Send Suggestion",
+                submitButtonSending: "Sending...",
+                statusSuccess: "Data sent successfully!",
+                statusFail: "Failed to send:",
+                statusNetworkError: "A network error occurred. Please try again.",
+                switchTo: "العربية",
+                footerText: "&copy; All rights reserved for RivalMC",
+                discordContent: "New addition suggestion from",
+                discordEmbedTitle: "Addition Details",
+                discordUserField: "Suggested by",
+                discordMessageField: "Explanation",
+                discordFooter: "Sent at:"
+            }
+        };
+
+        const setLanguage = (lang) => {
+            currentLanguage = lang;
+            const t = translations[lang];
+
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+            document.title = t.pageTitle;
+            document.getElementById('main-title').textContent = t.mainTitle;
+            document.getElementById('user-label').textContent = t.userLabel;
+            usernameInput.placeholder = t.userPlaceholder;
+            document.getElementById('message-label').textContent = t.messageLabel;
+            messageInput.placeholder = t.messagePlaceholder;
+            document.getElementById('image-urls-label').textContent = t.imageUrlsLabel;
+            imageUrlsInput.placeholder = t.imageUrlsPlaceholder;
+            submitButton.textContent = t.submitButton;
+            languageSwitcher.textContent = t.switchTo;
+            footerText.innerHTML = t.footerText;
+        };
+
+        languageSwitcher.addEventListener('click', () => {
+            const newLang = currentLanguage === 'ar' ? 'en' : 'ar';
+            setLanguage(newLang);
+        });
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const username = usernameInput.value.trim();
+            const message = messageInput.value.trim();
+            const imageUrlsText = imageUrlsInput.value.trim();
+            const t = translations[currentLanguage];
+
+            submitButton.disabled = true;
+            submitButton.innerHTML = `
+                <svg class="animate-spin h-5 w-5 mr-3 inline-block" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                ${t.submitButtonSending}
+            `;
+            statusMessage.textContent = '';
+
+            const imageUrls = imageUrlsText.split('\n').filter(url => url.trim() !== '');
+
+            const mainEmbed = {
+                title: t.discordEmbedTitle,
+                color: 7506394,
+                fields: [
+                    { name: t.discordUserField, value: username },
+                    { name: t.discordMessageField, value: message }
+                ],
+                footer: {
+                    text: `${t.discordFooter} ${new Date().toLocaleString(currentLanguage === 'ar' ? 'ar-EG' : 'en-US')}`
+                }
+            };
+            
+            const embedsToSend = [mainEmbed];
+
+            for (let i = 0; i < Math.min(imageUrls.length, 9); i++) {
+                embedsToSend.push({
+                    url: imageUrls[i],
+                    image: {
+                        url: imageUrls[i]
+                    }
+                });
+            }
+
+            const payload = {
+                username: "Box PvP Bot",
+                avatar_url: "https://imgg.io/images/2025/05/31/fc02dd5bc2b17705c9bbfda17f7500a0.png",
+                content: `${t.discordContent} **${username}**`,
+                embeds: embedsToSend
+            };
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    statusMessage.textContent = t.statusSuccess;
+                    statusMessage.className = 'text-green-400 mt-6 text-center text-sm font-medium';
+                    form.reset();
+                } else {
+                    const errorData = await response.json();
+                    statusMessage.textContent = `${t.statusFail} ${errorData.message || ''}`;
+                    statusMessage.className = 'text-red-400 mt-6 text-center text-sm font-medium';
+                }
+            } catch (error) {
+                console.error('Error sending webhook:', error);
+                statusMessage.textContent = t.statusNetworkError;
+                statusMessage.className = 'text-red-400 mt-6 text-center text-sm font-medium';
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = t.submitButton;
+            }
+        });
+
+        setLanguage('ar');
+    </script>
+
+</body>
+</html>
